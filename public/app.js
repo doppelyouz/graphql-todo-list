@@ -9,14 +9,26 @@ new Vue({
       }
     },
     created() {
-      fetch('/api/todo', {
-        method: 'get'
+      const query = `
+        query {
+          getTodos {
+            id title done createdAt updatedAt
+          }
+        }
+      `
+
+      fetch('/graphql', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept' : 'application/json'
+        },
+        body:JSON.stringify({query})
       })
-      .then(res => res.json())
-      .then(todos => {
-        this.todos = todos;
-      })
-      .catch()
+        .then(res => res.json())
+        .then(res => {
+          this.todos = res.data.getTodos;
+        })
     },
     methods: {
       addTodo() {
@@ -24,15 +36,24 @@ new Vue({
         if (!title) {
           return;
         }
-        fetch('/api/todo', {
+        const query = `
+          mutation {
+            createTodo(todo: {title: "${title}"}) {
+              id title done createdAt updatedAt
+            }
+          }
+        `
+        fetch('/graphql', {
           method: 'post',
-          headers: {'Content-Type' : 'application/json'},
-          body: JSON.stringify({title})
+          headers: {
+            'Content-Type' : 'application/json',
+            'Accept' : 'application/json'
+          },
+          body: JSON.stringify({query})
         })
         .then(res => res.json())
-        .then(({todo}) => {
-          console.log(todo);
-
+        .then(response => {
+          const todo = response.data.createTodo;
           this.todos.push(todo);
           this.todoTitle = ''
         })
@@ -81,7 +102,7 @@ new Vue({
           options.minute = '2-digit';
           options.second = '2-digit';
         }
-        return new Intl.DateTimeFormat('ru-RU', options).format(new Date(value))
+        return new Intl.DateTimeFormat('ru-RU', options).format(new Date(+value))
       }
     }
   })
