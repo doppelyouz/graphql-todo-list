@@ -8,7 +8,7 @@ module.exports = buildSchema(`
         createdAt: String
         updatedAt: String
     }
-    
+
     type Query {
         getTodos: [Todo!]!
     }
@@ -19,5 +19,6 @@ module.exports = buildSchema(`
 
     type Mutation {
         createTodo(todo: TodoInput!): Todo!
+        completeTodo(id: ID!): Todo!
     }
 `)

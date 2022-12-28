@@ -17,5 +17,15 @@ module.exports = {
         } catch(e) {
             throw new Error("Title is required");
         }
+    },
+    async completeTodo({id}) {
+        try {
+            const todo = await Todo.findByPk(id);
+            todo.done = true;
+            await todo.save();
+            return todo;
+        } catch(e) {
+            throw new Error("ID is required");
+        }
     }
 }
